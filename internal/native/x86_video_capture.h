@@ -1,5 +1,6 @@
 #ifndef X86_VIDEO_CAPTURE_H
 #define X86_VIDEO_CAPTURE_H
+#define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +10,8 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/time.h>
 #include <time.h>
 #include <linux/videodev2.h>
 #include <pthread.h>
