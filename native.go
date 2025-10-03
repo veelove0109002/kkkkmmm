@@ -56,6 +56,8 @@ func initNative(systemVersion *semver.Version, appVersion *semver.Version) {
 			}
 		},
 	})
+	// Inject instance into internal/native for cgo callbacks
+	native.SetInstance(nativeInstance)
 	nativeInstance.Start()
 
 	if os.Getenv("JETKVM_CRASH_TESTING") == "1" {
