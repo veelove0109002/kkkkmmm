@@ -205,7 +205,7 @@ jobs:
           tar -czf ../jetkvm-${GITHUB_REF_NAME}-multi-arch.tar.gz *
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             jetkvm-${{ github.ref_name }}-multi-arch.tar.gz
