@@ -10,6 +10,10 @@ on:
         description: 'Release tag (e.g., v1.0.0)'
         required: true
         default: 'v1.0.0'
+      video_device:
+        description: 'V4L2 capture device path (e.g., /dev/video0)'
+        required: false
+        default: '/dev/video0'
 
 env:
   GO_VERSION: '1.21'
@@ -118,8 +122,14 @@ jobs:
           if [ "${{ matrix.build_type }}" = "simulation" ]; then
             make build_x86_simulation SKIP_UI_BUILD=1
           elif [ "${{ matrix.build_type }}" = "hardware" ]; then
-            # Install additional dependencies for hardware build
-            sudo apt-get install -y libv4l-dev
+            # Install additional dependencies for hardware build (HDMI capture input)
+            sudo apt-get install -y libv4l-dev v4l-utils
+            echo "=== V4L2 devices ==="
+            v4l2-ctl --list-devices || true
+            DEV="${{ github.event_name == 'workflow_dispatch' && github.event.inputs.video_device || '/dev/video0' }}"
+            echo "Using capture device: ${DEV}"
+            v4l2-ctl -d "${DEV}" --list-formats-ext || true
+            export JETKVM_VIDEO_DEVICE="${DEV}"
             make build_x86_hardware SKIP_UI_BUILD=1
           elif [ "${{ matrix.build_type }}" = "arm" ]; then
             # For ARM, use simplified build without native dependencies
@@ -197,7 +207,7 @@ jobs:
             
             - **jetkvm-arm-linux**: For ARM devices (Rockchip RV1106, original hardware)
             - **jetkvm-x86_64-linux**: For X86_64 devices (software simulation)
-            - **jetkvm-x86_64-hardware-linux**: For X86_64 devices with real HDMI capture hardware
+            - **jetkvm-x86_64-hardware-linux**: For X86_64 devices with real HDMI capture input hardware
             
             ### 📦 Downloads
             - Download the appropriate binary for your architecture
