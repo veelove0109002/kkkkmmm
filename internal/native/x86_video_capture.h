@@ -9,10 +9,10 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <time.h>
 #include <linux/videodev2.h>
 #include <pthread.h>
 #include <stdint.h>
-#include <time.h>
 
 #ifdef __cplusplus
 extern "C" {
