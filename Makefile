@@ -147,3 +147,32 @@ release:
 	@shasum -a 256 bin/jetkvm_app | cut -d ' ' -f 1 > bin/jetkvm_app.sha256
 	rclone copyto bin/jetkvm_app r2://jetkvm-update/app/$(VERSION)/jetkvm_app
 	rclone copyto bin/jetkvm_app.sha256 r2://jetkvm-update/app/$(VERSION)/jetkvm_app.sha256
+
+# X86_64 Hardware build with real HDMI capture
+build_x86_hardware: frontend
+	@echo "Building X86_64 hardware version with real HDMI capture..."
+	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build \
+		-tags="hardware" \
+		-ldflags="$(GO_LDFLAGS) -X $(KVM_PKG_NAME).builtAppVersion=$(VERSION)" \
+		$(GO_RELEASE_BUILD_ARGS) \
+		-o bin/jetkvm_x86_hardware ./cmd
+
+# X86_64 Simulation build (original mock version)
+build_x86_simulation: frontend
+	@echo "Building X86_64 simulation version..."
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+		-ldflags="$(GO_LDFLAGS) -X $(KVM_PKG_NAME).builtAppVersion=$(VERSION)" \
+		$(GO_RELEASE_BUILD_ARGS) \
+		-o bin/jetkvm_x86_simulation ./cmd
+
+# Build both X86_64 versions
+build_x86_all: build_x86_hardware build_x86_simulation
+	@echo "Built both X86_64 versions:"
+	@ls -la bin/jetkvm_x86_*
+
+# Test video devices (requires Linux)
+test_video_devices:
+	@echo "Testing video devices..."
+	@./test_video_devices.sh
+
+.PHONY: build_x86_hardware build_x86_simulation build_x86_all test_video_devices
