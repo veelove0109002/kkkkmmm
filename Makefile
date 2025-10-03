@@ -152,9 +152,9 @@ release:
 build_x86_hardware: frontend
 	@echo "Building X86_64 hardware version with real HDMI capture..."
 	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build \
-		-tags="hardware" \
+		-tags "hardware,netgo,timetzdata,nomsgpack" \
 		-ldflags="$(GO_LDFLAGS) -X $(KVM_PKG_NAME).builtAppVersion=$(VERSION)" \
-		$(GO_RELEASE_BUILD_ARGS) \
+		-trimpath \
 		-o bin/jetkvm_x86_hardware ./cmd
 
 # X86_64 Simulation build (original mock version)
