@@ -1,5 +1,6 @@
 #ifndef X86_VIDEO_CAPTURE_H
 #define X86_VIDEO_CAPTURE_H
+#undef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
@@ -54,7 +55,7 @@ int x86_video_set_edid(const char* edid);
 
 // Callback functions (implemented in Go)
 extern void go_video_frame_callback(void* data, int size, int width, int height);
-extern void go_video_state_callback(int ready, int width, int height, float fps, const char* error);
+extern void go_video_state_callback(int ready, int width, int height, float fps, char* error);
 
 #ifdef __cplusplus
 }
