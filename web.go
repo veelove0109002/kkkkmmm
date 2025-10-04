@@ -278,13 +278,15 @@ func handleLocalWebRTCSignal(c *gin.Context) {
 
 	err = wsjson.Write(context.Background(), wsCon, gin.H{"type": "device-metadata", "data": gin.H{"deviceVersion": builtAppVersion}})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		scopedLogger.Warn().Err(err).Msg("failed to write device-metadata to websocket; closing connection")
+		_ = wsCon.Close(websocket.StatusInternalError, "write failed")
 		return
 	}
 
 	err = handleWebRTCSignalWsMessages(wsCon, false, source, connectionID, &scopedLogger)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		scopedLogger.Warn().Err(err).Msg("websocket signaling handler returned error")
+		_ = wsCon.Close(websocket.StatusNormalClosure, "signaling done")
 		return
 	}
 }
